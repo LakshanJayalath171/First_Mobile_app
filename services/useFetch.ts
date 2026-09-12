@@ -1,17 +1,11 @@
-//fetchMovies
-
-import { useEffect, useState } from "react";
-
-// fetchMovieDetails
-
-// useFetch(fetchMovies)
+import { useCallback, useEffect, useState } from "react";
 
 const useFetch = <T>(fetchFunction: () => Promise<T>, autofetch = true) => {
   const [data, setData] = useState<T | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<Error | null>(null);
 
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
@@ -22,7 +16,7 @@ const useFetch = <T>(fetchFunction: () => Promise<T>, autofetch = true) => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [fetchFunction]);
 
   const reset = () => {
     setData(null);
@@ -32,10 +26,11 @@ const useFetch = <T>(fetchFunction: () => Promise<T>, autofetch = true) => {
 
   useEffect(() => {
     if (autofetch) {
-      fetchData();
+      void Promise.resolve().then(fetchData);
     }
-  }, []);
+  }, [autofetch, fetchData]);
 
-  return { data, loading, error, fetchData, reset };
-  export default useFetch;
+  return { data, loading, error, reset, refetch: fetchData };
 };
+
+export default useFetch;
