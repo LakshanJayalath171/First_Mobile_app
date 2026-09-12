@@ -1,3 +1,4 @@
+import Movie_card from "@/components/Movie_card";
 import SearchBar from "@/components/SearchBar";
 import { icons } from "@/constants/icons";
 import { images } from "@/constants/images";
@@ -23,11 +24,10 @@ const Index = () => {
 
       <FlatList
         data={movieLoading || movieError ? [] : (movies ?? [])}
+        numColumns={3}
         keyExtractor={(item) => String(item.id)}
-        renderItem={({ item }) => (
-          <Text className="text-white">{item.title}</Text>
-        )}
-        className="flex-1 px-5"
+        renderItem={({ item }) => <Movie_card {...item} />}
+        columnWrapperStyle={{ justifyContent: "space-between" }}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ minHeight: "100%", paddingBottom: 10 }}
         ListHeaderComponent={
