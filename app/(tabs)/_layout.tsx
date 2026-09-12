@@ -2,17 +2,12 @@ import { icons } from "@/constants/icons";
 import { images } from "@/constants/images";
 import * as NavigationBar from "expo-navigation-bar";
 import { Tabs } from "expo-router";
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import { Image, ImageBackground, StyleSheet, Text, View } from "react-native";
 
 const TabIcon = ({ focused, title, icon }) => {
   useEffect(() => {
-    async function hideNavigationBar() {
-      await NavigationBar.setVisibilityAsync("hidden");
-      await NavigationBar.setBehaviorAsync("overlay-swipe");
-    }
-
-    hideNavigationBar();
+    void NavigationBar.setVisibilityAsync("hidden");
   }, []);
 
   if (focused) {
