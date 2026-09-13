@@ -6,6 +6,7 @@ export const TMDB_CONFIG = {
   },
 };
 
+// fetch movies from TMDB API
 export const fetchMovie = async ({ query }: { query: string }) => {
   const endPoint = query
     ? `${TMDB_CONFIG.BASE_URL}/search/movie?api_key=${encodeURIComponent(TMDB_CONFIG.API_KEY ?? "")}&query=${encodeURIComponent(query)}`
@@ -25,4 +26,39 @@ export const fetchMovie = async ({ query }: { query: string }) => {
   }
   const data = await response.json();
   return data.results;
+};
+
+// fetch movie details from TMDB API
+export const fetchMovieDetails = async (
+  movieId: number,
+): Promise<MovieDetails> => {
+  if (!Number.isInteger(movieId) || movieId <= 0) {
+    throw new Error("Invalid movie ID");
+  }
+
+  if (!TMDB_CONFIG.API_KEY) {
+    throw new Error("EXPO_PUBLIC_MOVIE_API_KEY is not configured");
+  }
+
+  try {
+    const response = await fetch(
+      `${TMDB_CONFIG.BASE_URL}/movie/${movieId}?api_key=${encodeURIComponent(TMDB_CONFIG.API_KEY ?? "")}`,
+      {
+        method: "GET",
+        headers: TMDB_CONFIG.headers,
+      },
+    );
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => null);
+      throw new Error(
+        errorData?.status_message ??
+          `Failed to fetch movie details (${response.status})`,
+      );
+    }
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
 };
