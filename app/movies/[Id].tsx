@@ -1,9 +1,16 @@
 import { icons } from "@/constants/icons";
 import { fetchMovieDetails } from "@/services/api";
 import useFetch from "@/services/useFetch";
-import { useLocalSearchParams } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import { useCallback } from "react";
-import { ActivityIndicator, Image, ScrollView, Text, View } from "react-native";
+import {
+  ActivityIndicator,
+  Image,
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 
 interface MovieInfoProps {
   label: string;
@@ -15,7 +22,7 @@ const MovieInfo = ({ label, value }: MovieInfoProps) => {
     <View className="flex-col items-start justify-center mt-5">
       <Text className="text-light-200 font-normal text-sm">{label}</Text>
 
-      <Text className="text-light-100 font-bold text-sm">{value}</Text>
+      <Text className="text-light-100 font-bold text-sm">{value || "N/A"}</Text>
     </View>
   );
 };
@@ -54,6 +61,7 @@ const Movie = () => {
                 {movie.title}
               </Text>
 
+              {/* runtime */}
               <View className="flex-row items-center gap-x-5 mt-2">
                 <Text className="text-light-200 text-sm ">
                   {movie?.release_date?.split("-")[0] ?? "N/A"}
@@ -63,6 +71,7 @@ const Movie = () => {
                 </Text>
               </View>
 
+              {/* vote count */}
               <View className="flex-row items-center bg-dark-100 px-2 py-1 rounded-md gap-x-1 mt-2">
                 <Image source={icons.star} className="size-6" />
                 <Text className="text-white font-bold text-sm">
@@ -73,10 +82,52 @@ const Movie = () => {
                   ({movie.vote_count})
                 </Text>
               </View>
+
+              {/*  */}
+
+              <MovieInfo label="Overview" value={movie.overview} />
+              <MovieInfo
+                label="Genres"
+                value={movie.genres.map((g) => g.name).join(", ")}
+              />
+
+              <View className="flex flex-row justify-between w-1/2 gap-3">
+                <MovieInfo
+                  label="Budget"
+                  value={`$${movie.budget / 10000000} millon`}
+                />
+
+                <MovieInfo
+                  label="Revenue"
+                  value={`$${movie.revenue / 10000000} millon`}
+                />
+              </View>
+
+              {/* production info */}
+
+              <MovieInfo
+                label="Production companies"
+                value={
+                  movie.production_companies.map((c) => c.name).join("_") ||
+                  "N/A"
+                }
+              />
             </View>
           </View>
         ) : null}
       </ScrollView>
+
+      <TouchableOpacity
+        className="absolute bottom-5 left-0 right-0 mx-5 bg-purple-500 rounded-lg py-3.5 flex flex-row items-center justify-center z-50"
+        onPress={router.back}
+      >
+        <Image
+          source={icons.arrow}
+          className="size-5 mr-1 mt-0.5 rotate-180"
+          tintColor="#fff"
+        />
+        <Text className="text-white font-semibold text-base">Go Back</Text>
+      </TouchableOpacity>
     </View>
   );
 };
